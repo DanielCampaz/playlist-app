@@ -4,14 +4,8 @@ import (
 	"net/http"
 )
 
-type User struct {
-	Name     string `json:"name"`
-	LastName string `json:"lastname"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
 type Code struct {
+	Id       string `json:"id"`
 	Code     string `json:"code"`
 	Order    string `json:"order"`
 	IsPlayed bool   `json:"isplayed"`
@@ -20,6 +14,7 @@ type Code struct {
 }
 
 type PlayList struct {
+	Id     string   `json:"id"`
 	Code   string   `json:"code"`
 	IdUser string   `json:"iduser"`
 	IdList []string `json:"idlist"`
@@ -27,5 +22,6 @@ type PlayList struct {
 
 type Controller struct {
 	Url     string
+	Method  string
 	Control func(http.ResponseWriter, *http.Request)
 }

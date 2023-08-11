@@ -3,10 +3,13 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	usercontroller "main/src/controllers/UserController"
 	"main/src/envirimoents"
 	"main/src/utils"
 	"net/http"
+
+	"github.com/gorilla/mux"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -38,12 +41,12 @@ func main() {
 
 	// 	json.NewEncoder(w).Encode(response)
 	// })
-
+	routes := mux.NewRouter()
 	for _, value := range usercontroller.UC {
-		http.HandleFunc(value.Url, value.Control)
+		routes.HandleFunc(value.Url, value.Control).Methods(value.Method)
 	}
 
 	fmt.Println("Api Listen in port 8080")
-	http.ListenAndServe(envirimoents.GetPort(), nil)
+	log.Fatal(http.ListenAndServe(envirimoents.GetPort(), routes))
 
 }
