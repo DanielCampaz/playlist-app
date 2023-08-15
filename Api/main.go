@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	authcontroller "main/src/controllers/AuthController"
 	usercontroller "main/src/controllers/UserController"
 	"main/src/envirimoents"
 	"main/src/utils"
@@ -42,6 +43,13 @@ func main() {
 	// 	json.NewEncoder(w).Encode(response)
 	// })
 	routes := mux.NewRouter()
+
+	// AUTH
+	for _, value := range authcontroller.AUC {
+		routes.HandleFunc(value.Url, value.Control).Methods(value.Method)
+	}
+
+	// USER
 	for _, value := range usercontroller.UC {
 		routes.HandleFunc(value.Url, value.Control).Methods(value.Method)
 	}

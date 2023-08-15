@@ -13,6 +13,16 @@ type Code struct {
 	IdList   string `json:"idlist"`
 }
 
+type Paginate struct {
+	Data   any    `json:"data"`
+	Limit  string `json:"limit"`
+	Offset string `json:"offset"`
+}
+
+type Message struct {
+	Message any `json:"message"`
+}
+
 type PlayList struct {
 	Id     string   `json:"id"`
 	Code   string   `json:"code"`
