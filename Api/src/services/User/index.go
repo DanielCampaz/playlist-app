@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"main/src/services"
 	"main/src/types"
+	"main/src/utils"
 )
 
 func CreateUser(u types.User) error {
@@ -11,8 +12,12 @@ func CreateUser(u types.User) error {
 	if er != nil {
 		return er
 	}
+	password, r := utils.HashPassword(u.Password)
+	if r != nil {
+		password = u.Password
+	}
 	_, err := db.Exec("INSERT INTO users (name, lastname, email, password) VALUES (?, ?, ?, ?)",
-		u.Name, u.LastName, u.Email, u.Password)
+		u.Name, u.LastName, u.Email, password)
 	defer db.Close()
 	return err
 }
@@ -22,8 +27,12 @@ func UpdateUser(id string, u types.User) error {
 	if er != nil {
 		return er
 	}
+	password, r := utils.HashPassword(u.Password)
+	if r != nil {
+		password = u.Password
+	}
 	_, err := db.Exec("UPDATE users SET name=?, lastname=?, email=?, password=? WHERE id=?",
-		u.Name, u.LastName, u.Email, u.Password, id)
+		u.Name, u.LastName, u.Email, password, id)
 	defer db.Close()
 	return err
 }
@@ -86,4 +95,16 @@ func GetUsers(limit string, offset string) (types.Paginate, error) {
 		Limit:  limitt,
 		Offset: offsett,
 	}, nil
+}
+
+func GetUserByEmail(email string) (types.User, error) {
+	db, er := services.GetDb()
+	if er != nil {
+		return types.UserMuckUp, er
+	}
+	var user types.User
+	err := db.QueryRow("SELECT id, name, lastname, email, password FROM users WHERE email=?", email).
+		Scan(&user.Id, &user.Name, &user.LastName, &user.Email, &user.Password)
+	defer db.Close()
+	return user, err
 }

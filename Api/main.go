@@ -32,8 +32,16 @@ func main() {
 	if err != nil {
 		panic(err.Error())
 	}
-
 	fmt.Println("Successful connection to MySQL database")
+	// Crea Tablas
+
+	for _, value := range utils.Tables {
+		_, err = db.Exec(value)
+		if err != nil {
+			fmt.Println("Error al crear la tabla:", err, value)
+			return
+		}
+	}
 	// http.HandleFunc("/api/hello", func(w http.ResponseWriter, r *http.Request) {
 	// 	response := Response{Message: "¡Hola desde la API de Go!"}
 
