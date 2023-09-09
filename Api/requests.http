@@ -1,0 +1,10 @@
+@hostname=localhost
+@port=8080
+
+@nameapi=api-v1
+
+### Get All
+GET http://{{hostname}}:{{port}}/{{nameapi}}/users/g/all
+
+### Get User By Id
+GET http://{{hostname}}:{{port}}/{{nameapi}}/users/2

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	authcontroller "main/src/controllers/AuthController"
+	listcontroller "main/src/controllers/ListController"
 	usercontroller "main/src/controllers/UserController"
 	"main/src/envirimoents"
 	"main/src/utils"
@@ -56,11 +57,19 @@ func main() {
 	for _, value := range authcontroller.AUC {
 		routes.HandleFunc(value.Url, value.Control).Methods(value.Method)
 	}
+	fmt.Println("Import of AUTH routes Completed")
 
 	// USER
 	for _, value := range usercontroller.UC {
 		routes.HandleFunc(value.Url, value.Control).Methods(value.Method)
 	}
+	fmt.Println("Import of USER routes Completed")
+
+	// LIST
+	for _, value := range listcontroller.LC {
+		routes.HandleFunc(value.Url, value.Control).Methods(value.Method)
+	}
+	fmt.Println("Import of LIST routes Completed")
 
 	fmt.Println("Api Listen in port 8080")
 	log.Fatal(http.ListenAndServe(envirimoents.GetPort(), routes))
