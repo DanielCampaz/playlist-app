@@ -3,8 +3,84 @@
 
 @nameapi=api-v1
 
+### USERS ENDPOINTS
 ### Get All
-GET http://{{hostname}}:{{port}}/{{nameapi}}/users/g/all
+GET http://{{hostname}}:{{port}}/{{nameapi}}/users/g/all?limit=10&offset=0
 
 ### Get User By Id
 GET http://{{hostname}}:{{port}}/{{nameapi}}/users/2
+
+### Post User
+POST http://{{hostname}}:{{port}}/{{nameapi}}/users/create
+Content-Type: application/json
+
+{
+    "name": "Leanne Graham",
+    "lastname": "Bret",
+    "email": "Sincere@april.biz",
+    "password": "123456789"
+}
+
+### Put User By Id
+PUT http://{{hostname}}:{{port}}/{{nameapi}}/users/update/8
+Content-Type: application/json
+
+{
+    "name": "Ervin Howell",
+    "password": "123456789ErvinHowell"
+}
+
+### Delete User By Id
+DELETE http://{{hostname}}:{{port}}/{{nameapi}}/users/delete/8
+
+
+### AUTH
+
+### Post Login
+POST http://{{hostname}}:{{port}}/{{nameapi}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "Sincere@april.biz",
+    "password": "123456789"
+}
+
+### Post SingUp
+POST http://{{hostname}}:{{port}}/{{nameapi}}/auth/singup
+Content-Type: application/json
+
+{
+    "name": "Clementine Bauch",
+    "lastname": "Samantha",
+    "email": "Nathan@yesenia.net",
+    "password": "61321cas"
+}
+
+### LIST ENDPOINTS
+### Get All
+GET http://{{hostname}}:{{port}}/{{nameapi}}/list/g/all?limit=10&offset=0
+
+### Get List By Id
+GET http://{{hostname}}:{{port}}/{{nameapi}}/list/1
+
+### Post List
+POST http://{{hostname}}:{{port}}/{{nameapi}}/list/create
+Content-Type: application/json
+
+{
+    "name": "Salsa",
+    "iduser": "9",
+    "act": 0
+}
+
+### Put List By Id
+PUT http://{{hostname}}:{{port}}/{{nameapi}}/list/update/1
+Content-Type: application/json
+
+{
+    "name": "Salsa 2"
+}
+
+### Delete List By Id
+DELETE http://{{hostname}}:{{port}}/{{nameapi}}/list/delete/1
+

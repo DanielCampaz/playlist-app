@@ -25,6 +25,15 @@ func GetUrlMysqlConnection() string {
 	return url
 }
 
+func GetSecretKeyJWT() string {
+	nameEnv := "SECRETKEYJWT"
+	sk := ENV.GetEnv(nameEnv)
+	if sk == "NULL" {
+		return nameEnv
+	}
+	return sk
+}
+
 func GetApiName() string {
 
 	apiName := ENV.GetEnv("API_NAME")
@@ -64,6 +73,16 @@ func HashPassword(password string) (string, error) {
 func ComparePassword(inputPassword string, hashedPassword string) error {
 	// Compara la contraseña ingresada con el hash almacenado
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(inputPassword))
+}
+
+func VerifyIfIsEncrypt(password string) bool {
+	long := len(password)
+	fmt.Print(long)
+	if long > 30 {
+		return true
+	} else {
+		return false
+	}
 }
 
 var Tables []string = []string{

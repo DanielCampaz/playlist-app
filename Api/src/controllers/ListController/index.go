@@ -49,6 +49,7 @@ func createList(w http.ResponseWriter, r *http.Request) {
 
 	// Leer el cuerpo de la solicitud
 	body, err := ioutil.ReadAll(r.Body)
+	fmt.Println("Cuerpo JSON recibido:", string(body))
 	if err != nil {
 		http.Error(w, "Error al leer el cuerpo de la solicitud", http.StatusBadRequest)
 		return
@@ -59,16 +60,22 @@ func createList(w http.ResponseWriter, r *http.Request) {
 	var newList types.List
 	err = json.Unmarshal(body, &newList)
 	if err != nil {
-		http.Error(w, "Error al deserializar los datos del cuerpo", http.StatusBadRequest)
+		fmt.Println("Error al deserializar JSON:", err)
+		http.Error(w, "Error al deserializar el cuerpo de la solicitud", http.StatusBadRequest)
 		return
 	}
 
 	ersr := list.CreateList(newList)
 	if ersr != nil {
 		utils.JsonResponse(w, ersr)
-
 	} else {
-		utils.JsonResponse(w, newList)
+		listG, err := list.GetListByName(newList.Name)
+		if err != nil {
+			utils.JsonResponse(w, err)
+
+		} else {
+			utils.JsonResponse(w, listG)
+		}
 	}
 
 }
@@ -105,7 +112,12 @@ func updateList(w http.ResponseWriter, r *http.Request) {
 		fmt.Print(errs)
 	}
 
-	utils.JsonResponse(w, upList)
+	listar, errv := list.GetList(listID)
+	if errv != nil {
+		utils.JsonResponse(w, errv)
+	} else {
+		utils.JsonResponse(w, listar)
+	}
 }
 
 var delete = endpoint("delete/{id}")

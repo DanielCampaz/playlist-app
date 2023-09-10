@@ -19,6 +19,7 @@ func CreateUser(u types.User) error {
 	_, err := db.Exec("INSERT INTO users (name, lastname, email, password) VALUES (?, ?, ?, ?)",
 		u.Name, u.LastName, u.Email, password)
 	defer db.Close()
+
 	return err
 }
 
@@ -28,11 +29,11 @@ func UpdateUser(id string, u types.User) error {
 		return er
 	}
 	password, r := utils.HashPassword(u.Password)
-	if r != nil {
-		password = u.Password
+	if r == nil {
+		u.Password = password
 	}
 	_, err := db.Exec("UPDATE users SET name=?, lastname=?, email=?, password=? WHERE id=?",
-		u.Name, u.LastName, u.Email, password, id)
+		u.Name, u.LastName, u.Email, u.Password, id)
 	defer db.Close()
 	return err
 }

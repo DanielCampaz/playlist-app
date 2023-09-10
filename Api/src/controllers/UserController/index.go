@@ -9,6 +9,8 @@ import (
 	"main/src/utils"
 	"net/http"
 
+	"strconv"
+
 	"github.com/gorilla/mux"
 )
 
@@ -42,10 +44,26 @@ func getAllUsers(w http.ResponseWriter, r *http.Request) {
 	utils.JsonResponse(w, users)
 }
 
+var getId = endpoint("g/{id}")
+var methodGetId = "GET"
+
+func getIdUsers(w http.ResponseWriter, r *http.Request) {
+	// Obtener los parámetros de consulta de la URL
+	queryParams := r.URL.Query()
+
+	// Obtener valores individuales de los parámetros de consulta
+	limit := queryParams.Get("limit")
+	offset := queryParams.Get("offset")
+
+	users, _ := u.GetUsers(limit, offset)
+
+	utils.JsonResponse(w, users)
+}
+
 var create = endpoint("create")
 var methodCreate = "POST"
 
-func createUser(w http.ResponseWriter, r *http.Request) {
+func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	// Leer el cuerpo de la solicitud
 	body, err := ioutil.ReadAll(r.Body)
@@ -68,7 +86,13 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 		utils.JsonResponse(w, ersr)
 
 	} else {
-		utils.JsonResponse(w, newUser)
+		newUserCreate, err := u.GetUserByEmail(newUser.Email)
+		if err != nil {
+			utils.JsonResponse(w, err)
+
+		} else {
+			utils.JsonResponse(w, newUserCreate)
+		}
 	}
 
 }
@@ -105,7 +129,14 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
 		fmt.Print(errs)
 	}
 
-	utils.JsonResponse(w, upUser)
+	id := strconv.FormatInt(int64(upUser.Id), 10)
+	userUpdate, err := u.GetUser(id)
+	if err != nil {
+		utils.JsonResponse(w, err)
+
+	} else {
+		utils.JsonResponse(w, userUpdate)
+	}
 }
 
 var delete = endpoint("delete/{id}")
@@ -117,6 +148,8 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
 	err := u.DeleteUser(userID)
 	if err != nil {
 		// TODO: Enviar al correo
+		utils.JsonResponse(w, err)
+
 	}
 	utils.JsonResponse(w, types.Message{Message: "User Deleting"})
 }
@@ -124,7 +157,7 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
 var UC []types.Controller = []types.Controller{
 	{
 		Url:     create,
-		Control: createUser,
+		Control: CreateUser,
 		Method:  methodCreate,
 	},
 	{
@@ -146,5 +179,10 @@ var UC []types.Controller = []types.Controller{
 		Url:     getAll,
 		Control: getAllUsers,
 		Method:  methodGetAll,
+	},
+	{
+		Url:     getId,
+		Control: getIdUsers,
+		Method:  methodGetId,
 	},
 }

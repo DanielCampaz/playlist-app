@@ -5,16 +5,26 @@ import (
 )
 
 type Code struct {
-	Id       string `json:"id"`
-	Code     string `json:"code"`
-	Order    string `json:"order"`
-	IsPlayed bool   `json:"isplayed"`
-	IdUser   string `json:"iduser"`
-	IdList   string `json:"idlist"`
+	Id           int    `json:"id"`
+	Code         string `json:"code"`
+	Order_Number int    `json:"order_number"`
+	IsPlatey     bool   `json:"isplatey"`
+	IdUser       string `json:"iduser"`
+	IdList       string `json:"idlist"`
 }
 
 var CodeMuckUp Code = Code{}
 var CodeMuckP []Code = []Code{}
+
+type Login struct {
+	Email    string
+	Password string
+}
+
+type LoginResponse struct {
+	Data  any    `json:"data"`
+	Token string `json:"token"`
+}
 
 type Paginate struct {
 	Data   any    `json:"data"`
@@ -26,8 +36,9 @@ type Message struct {
 	Message any `json:"message"`
 }
 
+// Act === Actual
 type List struct {
-	Id     string `json:"id"`
+	Id     int    `json:"id"`
 	Name   string `json:"name"`
 	IdUser string `json:"iduser"`
 	Act    int    `json:"act"`
