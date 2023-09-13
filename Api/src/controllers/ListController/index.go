@@ -235,37 +235,37 @@ func addCode(w http.ResponseWriter, r *http.Request) {
 var LC []types.Controller = []types.Controller{
 	{
 		Url:     create,
-		Control: createList,
+		Control: utils.VerifyTokenJWT(createList),
 		Method:  methodCreate,
 	},
 	{
 		Url:     update,
-		Control: updateList,
+		Control: utils.VerifyTokenJWT(updateList),
 		Method:  methodUpdate,
 	},
 	{
 		Url:     delete,
-		Control: deleteList,
+		Control: utils.VerifyTokenJWT(deleteList),
 		Method:  methodDelete,
 	},
 	{
 		Url:     get,
-		Control: getList,
+		Control: utils.VerifyTokenJWT(getList),
 		Method:  methodGet,
 	},
 	{
 		Url:     getAll,
-		Control: getAllLists,
+		Control: utils.VerifyTokenJWT(getAllLists),
 		Method:  methodGetAll,
 	},
 	{
 		Url:     next,
-		Control: nextCode,
+		Control: utils.VerifyTokenJWT(nextCode),
 		Method:  methodNext,
 	},
 	{
 		Url:     Add,
-		Control: addCode,
+		Control: utils.VerifyTokenJWT(addCode),
 		Method:  methodAdd,
 	},
 }

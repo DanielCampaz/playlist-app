@@ -157,32 +157,32 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
 var UC []types.Controller = []types.Controller{
 	{
 		Url:     create,
-		Control: CreateUser,
+		Control: utils.VerifyTokenJWT(CreateUser),
 		Method:  methodCreate,
 	},
 	{
 		Url:     update,
-		Control: updateUser,
+		Control: utils.VerifyTokenJWT(updateUser),
 		Method:  methodUpdate,
 	},
 	{
 		Url:     delete,
-		Control: deleteUser,
+		Control: utils.VerifyTokenJWT(deleteUser),
 		Method:  methodDelete,
 	},
 	{
 		Url:     get,
-		Control: getUser,
+		Control: utils.VerifyTokenJWT(getUser),
 		Method:  methodGet,
 	},
 	{
 		Url:     getAll,
-		Control: getAllUsers,
+		Control: utils.VerifyTokenJWT(getAllUsers),
 		Method:  methodGetAll,
 	},
 	{
 		Url:     getId,
-		Control: getIdUsers,
+		Control: utils.VerifyTokenJWT(getIdUsers),
 		Method:  methodGetId,
 	},
 }
