@@ -4,17 +4,19 @@ import (
 	"encoding/json"
 	"fmt"
 	ENV "main/src/envirimoents"
+	"main/src/types"
 	"net/http"
+	"regexp"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 func GetUrlMysqlConnection() string {
 
-	user := ENV.GetEnv("MYSQL_USER")
-	password := ENV.GetEnv("MYSQL_PASSWORD")
-	port := ENV.GetEnv("MYSQL_PORT")
-	namedatabase := ENV.GetEnv("MYSQL_NAMEDATABASE")
+	user := ENV.GetEnv("MYSQL_USER", "root")
+	password := ENV.GetEnv("MYSQL_PASSWORD", "123456789")
+	port := ENV.GetEnv("MYSQL_PORT", "3306")
+	namedatabase := ENV.GetEnv("MYSQL_NAMEDATABASE", "playlist")
 
 	if user == "NULL" || password == "NULL" || port == "NULL" || namedatabase == "NULL" {
 		return ""
@@ -27,19 +29,13 @@ func GetUrlMysqlConnection() string {
 
 func GetSecretKeyJWT() string {
 	nameEnv := "SECRETKEYJWT"
-	sk := ENV.GetEnv(nameEnv)
-	if sk == "NULL" {
-		return nameEnv
-	}
+	sk := ENV.GetEnv(nameEnv, nameEnv)
 	return sk
 }
 
 func GetApiName() string {
 
-	apiName := ENV.GetEnv("API_NAME")
-	if apiName == "NULL" {
-		return ""
-	}
+	apiName := ENV.GetEnv("API_NAME", "")
 	return apiName + "/"
 }
 
@@ -89,4 +85,26 @@ var Tables []string = []string{
 	"CREATE TABLE IF NOT EXISTS users (id INT NOT NULL AUTO_INCREMENT,name VARCHAR(200) NOT NULL,email VARCHAR(200) NOT NULL,password VARCHAR(200) NOT NULL,lastname VARCHAR(200) NOT NULL,PRIMARY KEY (id));",
 	"CREATE TABLE IF NOT EXISTS code (id INT NOT NULL AUTO_INCREMENT,code VARCHAR(200) NOT NULL,order_number INT NOT NULL,isplatey TINYINT NOT NULL,iduser INT NOT NULL,idlist INT NOT NULL,PRIMARY KEY (id));",
 	"CREATE TABLE IF NOT EXISTS list (id INT NOT NULL AUTO_INCREMENT,name VARCHAR(200) NOT NULL,iduser INT NOT NULL,act INT NULL DEFAULT 0,PRIMARY KEY (id));",
+}
+
+func IframeRemove(iframeCode types.Iframe) string {
+	// Define una expresión regular para buscar el código del video de YouTube
+	regex := regexp.MustCompile(`https://www\.youtube\.com/embed/([A-Za-z0-9_-]+)`)
+
+	if iframeCode.Type == "iframe" {
+		// Busca coincidencias en la cadena del iframe
+		matches := regex.FindStringSubmatch(iframeCode.Ifr)
+
+		// Comprueba si se encontraron coincidencias
+		if len(matches) >= 2 {
+			videoCode := matches[1]
+			return videoCode
+		} else {
+			return ""
+		}
+
+	} else {
+		return iframeCode.Ifr
+	}
+
 }

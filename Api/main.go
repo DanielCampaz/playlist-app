@@ -16,9 +16,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-type Response struct {
-	Message string `json:"message"`
-}
+// type Response struct {
+// 	Message string `json:"message"`
+// }
 
 func main() {
 	// Cadena de conexión a la base de datos

@@ -42,6 +42,7 @@ type List struct {
 	Name   string `json:"name"`
 	IdUser string `json:"iduser"`
 	Act    int    `json:"act"`
+	Counts int    `json:"counts"`
 }
 
 var ListMuckUp List = List{}
@@ -51,4 +52,9 @@ type Controller struct {
 	Url     string
 	Method  string
 	Control func(http.ResponseWriter, *http.Request)
+}
+
+type Iframe struct {
+	Ifr  string `json:"ifr"`
+	Type string `json:"type"`
 }

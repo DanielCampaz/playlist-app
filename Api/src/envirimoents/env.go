@@ -6,16 +6,14 @@ import (
 	"github.com/joho/godotenv"
 )
 
-const returnnull = "NULL"
-
-func GetEnv(name string) string {
+func GetEnv(name string, defaultValue string) string {
 	err := godotenv.Load()
 	if err != nil {
-		return returnnull
+		return defaultValue
 	}
 	apiKey := os.Getenv(name)
 	if apiKey == "" {
-		return returnnull
+		return defaultValue
 	} else {
 		return apiKey
 	}
@@ -24,7 +22,7 @@ func GetEnv(name string) string {
 func GetPort() string {
 	err := godotenv.Load()
 	if err != nil {
-		return returnnull
+		return ":8080"
 	}
 	apiKey := os.Getenv("APLICATION_PORT")
 	if apiKey == "" {

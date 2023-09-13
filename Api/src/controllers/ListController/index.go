@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	code "main/src/services/Code"
 	list "main/src/services/List"
+	user "main/src/services/User"
 	"main/src/types"
 	"main/src/utils"
 	"net/http"
@@ -49,7 +51,6 @@ func createList(w http.ResponseWriter, r *http.Request) {
 
 	// Leer el cuerpo de la solicitud
 	body, err := ioutil.ReadAll(r.Body)
-	fmt.Println("Cuerpo JSON recibido:", string(body))
 	if err != nil {
 		http.Error(w, "Error al leer el cuerpo de la solicitud", http.StatusBadRequest)
 		return
@@ -67,7 +68,7 @@ func createList(w http.ResponseWriter, r *http.Request) {
 
 	ersr := list.CreateList(newList)
 	if ersr != nil {
-		utils.JsonResponse(w, ersr)
+		utils.JsonResponse(w, "Error To Create List")
 	} else {
 		listG, err := list.GetListByName(newList.Name)
 		if err != nil {
@@ -131,8 +132,104 @@ func deleteList(w http.ResponseWriter, r *http.Request) {
 		// TODO: Enviar al correo
 	}
 
+	codeDel := code.DeleteAllCodes(listID)
+	msDelCod := "Error al eliminar code's de esta playlist: " + listID
+	if codeDel {
+		msDelCod = "Todos los Code Eliminados"
+	}
 	// TODO: Eliminar los codigos
-	utils.JsonResponse(w, types.Message{Message: "List Deleting"})
+	utils.JsonResponse(w, types.Message{Message: "List Deleting; " + msDelCod})
+}
+
+var next = endpoint("next/{id}")
+var methodNext = "GET"
+
+func nextCode(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	listID := vars["id"]
+	lista, err := list.GetList(listID)
+	if err != nil {
+		utils.JsonResponse(w, types.Message{Message: "Error al optener La Lista"})
+		return
+	}
+
+	act := lista.Act + 1
+
+	codes, errors := code.GetCodesByOrder(listID, fmt.Sprint(act))
+	if errors != nil {
+		utils.JsonResponse(w, types.Message{Message: "Error al optener Codigo actual"})
+		return
+	}
+
+	list.UpdateAct(listID)
+
+	utils.JsonResponse(w, codes)
+}
+
+var Add = endpoint("add/{idList}/{idUser}")
+var methodAdd = "POST"
+
+func addCode(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	listID := vars["idList"]
+	userID := vars["idUser"]
+	lista, err := list.GetList(listID)
+	if err != nil {
+		utils.JsonResponse(w, "Error al optener la lista")
+		return
+	}
+
+	_, errc := user.GetUser(userID)
+	if errc != nil {
+		utils.JsonResponse(w, "Error al optener el usuario")
+		return
+	}
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Error al leer el cuerpo de la solicitud", http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	// Deserializar el cuerpo en una estructura User
+
+	var iframe types.Iframe
+	err = json.Unmarshal(body, &iframe)
+	if err != nil {
+		utils.JsonResponse(w, types.Message{Message: err})
+		return
+	}
+
+	fr := utils.IframeRemove(iframe)
+
+	if fr == "" {
+		utils.JsonResponse(w, types.Message{Message: "Error al copiar el codigo del video"})
+		return
+	}
+	// Deserializar el cuerpo en una estructura User
+	var newCode types.Code = types.Code{
+		IdUser:       userID,
+		IdList:       listID,
+		Order_Number: lista.Counts + 1,
+		IsPlatey:     false,
+		Code:         fr,
+		Id:           0,
+	}
+
+	if err != nil {
+		http.Error(w, "Error al deserializar los datos del cuerpo", http.StatusBadRequest)
+		return
+	}
+
+	errs := code.CreateCode(newCode)
+	if errs != nil {
+		http.Error(w, "Error al crear Code", http.StatusBadRequest)
+		return
+	}
+	list.UpdateCount(listID)
+
+	utils.JsonResponse(w, types.Message{Message: "Code Creado correctamente"})
 }
 
 var LC []types.Controller = []types.Controller{
@@ -160,5 +257,15 @@ var LC []types.Controller = []types.Controller{
 		Url:     getAll,
 		Control: getAllLists,
 		Method:  methodGetAll,
+	},
+	{
+		Url:     next,
+		Control: nextCode,
+		Method:  methodNext,
+	},
+	{
+		Url:     Add,
+		Control: addCode,
+		Method:  methodAdd,
 	},
 }

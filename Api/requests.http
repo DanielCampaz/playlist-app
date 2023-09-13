@@ -8,7 +8,7 @@
 GET http://{{hostname}}:{{port}}/{{nameapi}}/users/g/all?limit=10&offset=0
 
 ### Get User By Id
-GET http://{{hostname}}:{{port}}/{{nameapi}}/users/2
+GET http://{{hostname}}:{{port}}/{{nameapi}}/users/13
 
 ### Post User
 POST http://{{hostname}}:{{port}}/{{nameapi}}/users/create
@@ -22,7 +22,7 @@ Content-Type: application/json
 }
 
 ### Put User By Id
-PUT http://{{hostname}}:{{port}}/{{nameapi}}/users/update/8
+PUT http://{{hostname}}:{{port}}/{{nameapi}}/users/update/13
 Content-Type: application/json
 
 {
@@ -31,7 +31,7 @@ Content-Type: application/json
 }
 
 ### Delete User By Id
-DELETE http://{{hostname}}:{{port}}/{{nameapi}}/users/delete/8
+DELETE http://{{hostname}}:{{port}}/{{nameapi}}/users/delete/11
 
 
 ### AUTH
@@ -42,7 +42,7 @@ Content-Type: application/json
 
 {
     "email": "Sincere@april.biz",
-    "password": "123456789"
+    "password": "123456789ErvinHowell"
 }
 
 ### Post SingUp
@@ -63,14 +63,27 @@ GET http://{{hostname}}:{{port}}/{{nameapi}}/list/g/all?limit=10&offset=0
 ### Get List By Id
 GET http://{{hostname}}:{{port}}/{{nameapi}}/list/1
 
+### Get Code Act
+GET http://{{hostname}}:{{port}}/{{nameapi}}/list/next/3
+
+### POST Code in List By Id
+POST  http://{{hostname}}:{{port}}/{{nameapi}}/list/add/3/13
+Content-Type: application/json
+
+{
+    "ifr": "<iframe width='560' height='315' src='https://www.youtube.com/embed/AGiayASyp2Q?si=eRn-rQhF9jzZKu_u' title='YouTube video player' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' allowfullscreen></iframe>",
+    "type": "iframe"
+}
+
 ### Post List
 POST http://{{hostname}}:{{port}}/{{nameapi}}/list/create
 Content-Type: application/json
 
 {
     "name": "Salsa",
-    "iduser": "9",
-    "act": 0
+    "iduser": "13",
+    "act": 0,
+    "counts": 0
 }
 
 ### Put List By Id
@@ -82,5 +95,5 @@ Content-Type: application/json
 }
 
 ### Delete List By Id
-DELETE http://{{hostname}}:{{port}}/{{nameapi}}/list/delete/1
+DELETE http://{{hostname}}:{{port}}/{{nameapi}}/list/delete/2
 

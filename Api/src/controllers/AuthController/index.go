@@ -56,24 +56,24 @@ func singupM(w http.ResponseWriter, r *http.Request) {
 	usercontroller.CreateUser(w, r)
 }
 
-var generar = endpoint("generate")
-var methodGenerar = "GET"
+// var generar = endpoint("generate")
+// var methodGenerar = "GET"
 
-func generarEnd(w http.ResponseWriter, r *http.Request) {
-	token, err := utils.GenerateJWT("jcbakjsbc@gmail.com")
-	if err != nil {
-		utils.JsonResponse(w, types.Message{Message: err})
-	} else {
-		utils.JsonResponse(w, types.Message{Message: token})
-	}
-}
+// func generarEnd(w http.ResponseWriter, r *http.Request) {
+// 	token, err := utils.GenerateJWT("jcbakjsbc@gmail.com")
+// 	if err != nil {
+// 		utils.JsonResponse(w, types.Message{Message: err})
+// 	} else {
+// 		utils.JsonResponse(w, types.Message{Message: token})
+// 	}
+// }
 
-var verificar = endpoint("verificar")
-var methodVerificar = "GET"
+// var verificar = endpoint("verificar")
+// var methodVerificar = "GET"
 
-func verificarEnd(w http.ResponseWriter, r *http.Request) {
-	utils.JsonResponse(w, types.Message{Message: "Token Verificado"})
-}
+// func verificarEnd(w http.ResponseWriter, r *http.Request) {
+// 	utils.JsonResponse(w, types.Message{Message: "Token Verificado"})
+// }
 
 var AUC []types.Controller = []types.Controller{
 	{
@@ -84,7 +84,11 @@ var AUC []types.Controller = []types.Controller{
 		Url:     singup,
 		Method:  methodSingup,
 		Control: singupM,
-	}, {
+	},
+}
+
+/*
+{
 		Url:     generar,
 		Method:  methodGenerar,
 		Control: generarEnd,
@@ -93,4 +97,6 @@ var AUC []types.Controller = []types.Controller{
 		Method:  methodVerificar,
 		Control: utils.VerifyTokenJWT(verificarEnd),
 	},
-}
+
+
+*/

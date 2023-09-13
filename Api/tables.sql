@@ -25,5 +25,8 @@ CREATE TABLE
         name VARCHAR(200) NOT NULL,
         iduser INT NOT NULL,
         act INT NULL DEFAULT 0,
+        counts INT NULL DEFAULT 0,
         PRIMARY KEY (id)
     );
+
+DELETE FROM code WHERE idlist = 2 LIMIT 1000;
