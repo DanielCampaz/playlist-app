@@ -81,19 +81,21 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ersr := u.CreateUser(newUser)
-	if ersr != nil {
-		utils.JsonResponse(w, ersr)
+	fmt.Print(newUser)
 
-	} else {
-		newUserCreate, err := u.GetUserByEmail(newUser.Email)
-		if err != nil {
-			utils.JsonResponse(w, err)
+	// ersr := u.CreateUser(newUser)
+	// if ersr != nil {
+	// 	utils.JsonResponse(w, ersr)
 
-		} else {
-			utils.JsonResponse(w, newUserCreate)
-		}
-	}
+	// } else {
+	// 	newUserCreate, err := u.GetUserByEmail(newUser.Email)
+	// 	if err != nil {
+	// 		utils.JsonResponse(w, err)
+
+	// 	} else {
+	// 		utils.JsonResponse(w, newUserCreate)
+	// 	}
+	// }
 
 }
 
