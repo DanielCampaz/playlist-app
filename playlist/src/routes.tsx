@@ -2,11 +2,18 @@ import { Outlet, createBrowserRouter } from "react-router-dom";
 import ErrorPage from "./components/ErrorPage";
 import Auth from "./components/Auth/Auth";
 import Home from "./pages/Home";
+import Principal from "./pages/Principal";
 
 const Router = createBrowserRouter([
   {
     path: "/",
-    element: <Home />,
+    element: <Principal />,
+    children: [
+      {
+        path: "home",
+        element: <Home />,
+      },
+    ],
     errorElement: <ErrorPage />,
   },
   {
@@ -18,8 +25,8 @@ const Router = createBrowserRouter([
         element: <Auth type="login" />,
       },
       {
-        path: "signup",
-        element: <Auth type="signup" />,
+        path: "singup",
+        element: <Auth type="singup" />,
       },
     ],
     errorElement: <ErrorPage />,

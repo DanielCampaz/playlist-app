@@ -12,3 +12,9 @@ export const URLGETALLUSERS = URLUSER + "/g/all";
 export const URLPOSTUSER = URLUSER + "/create";
 export const URLPUTUSER = (id: string) => URLUSER + "/update/" + id;
 export const URLDELETEUSER = (id: string) => URLUSER + "/delete/" + id;
+
+/*
+    Local Storage 
+*/
+
+export const SESSIONLOCALST = "sessionPlayList";

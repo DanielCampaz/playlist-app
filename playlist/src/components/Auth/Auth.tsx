@@ -3,15 +3,19 @@ import AuthConnection, { PropsLogin } from "../../class/connection/auth";
 import { User } from "../../types";
 import AuthInput, { PropsAuthInput } from "./AuthInput";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import Storage from "../../class/storage";
+import { SESSIONLOCALST } from "../../const";
 
 interface Props {
-  type: "login" | "signup";
+  type: "login" | "singup";
 }
 
 const placeholder = "example@gmail.com";
 
 export default function Auth({ type }: Props) {
   const { register, handleSubmit } = useForm();
+  const navigate = useNavigate();
   const dataLogin: PropsAuthInput[] = [
     {
       id: "email",
@@ -65,12 +69,28 @@ export default function Auth({ type }: Props) {
       const responLogin = await AuthConnection.Login(data as PropsLogin);
       if (responLogin.error) {
         toast.error(responLogin.error);
+      } else {
+        toast.success("Login Succesful");
+        Storage.local.save(SESSIONLOCALST, responLogin);
+        setTimeout(() => {
+          navigate("/", {
+            replace: true,
+          });
+        }, 6000);
       }
+      console.log(responLogin);
       // TODO: Send Login to
     } else {
       const responSingUp = await AuthConnection.SingUp(data as User);
       if (responSingUp.error) {
         toast.error(responSingUp.error);
+      } else {
+        toast.success("Singup Succesful");
+        setTimeout(() => {
+          navigate("/auth/login", {
+            replace: true,
+          });
+        }, 6000);
       }
       // TODO: Send Sing Up to
     }

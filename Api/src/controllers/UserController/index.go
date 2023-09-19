@@ -102,8 +102,6 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Print(newUser)
-
 	ersr := u.CreateUser(newUser)
 	if ersr != nil {
 		utils.JsonResponse(w, types.ErrorMessage{Error: "Error to create user"})
