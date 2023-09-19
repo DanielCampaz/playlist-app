@@ -14,6 +14,7 @@ import (
 	"github.com/gorilla/mux"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/rs/cors"
 )
 
 // type Response struct {
@@ -34,23 +35,7 @@ func main() {
 		panic(err.Error())
 	}
 	fmt.Println("Successful connection to MySQL database")
-	// Crea Tablas
 
-	for _, value := range utils.Tables {
-		_, err = db.Exec(value)
-		if err != nil {
-			fmt.Println("Error al crear la tabla:", err, value)
-			return
-		}
-	}
-	// http.HandleFunc("/api/hello", func(w http.ResponseWriter, r *http.Request) {
-	// 	response := Response{Message: "¡Hola desde la API de Go!"}
-
-	// 	w.Header().Set("Content-Type", "application/json")
-	// 	w.WriteHeader(http.StatusOK)
-
-	// 	json.NewEncoder(w).Encode(response)
-	// })
 	routes := mux.NewRouter()
 
 	// AUTH
@@ -71,7 +56,15 @@ func main() {
 	}
 	fmt.Println("Import of LIST routes Completed")
 
-	fmt.Println("Api Listen in port 8080")
-	log.Fatal(http.ListenAndServe(envirimoents.GetPort(), routes))
+	// Configuración de CORS
+	corsOptions := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"}, // Cambia esto a tu origen permitido
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+	})
 
+	// Aplica CORS como middleware
+	handler := corsOptions.Handler(routes)
+
+	fmt.Println("API Listening on port 8080")
+	log.Fatal(http.ListenAndServe(envirimoents.GetPort(), handler))
 }

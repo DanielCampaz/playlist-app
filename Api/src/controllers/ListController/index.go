@@ -23,9 +23,16 @@ func getList(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	listId := vars["id"]
 
-	list, _ := list.GetList(listId)
+	list, err := list.GetList(listId)
 
-	utils.JsonResponse(w, list)
+	if err != nil {
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error to Get List"})
+		return
+	} else {
+
+		utils.JsonResponse(w, list)
+	}
+
 }
 
 var getAll = endpoint("g/all")
@@ -39,9 +46,16 @@ func getAllLists(w http.ResponseWriter, r *http.Request) {
 	limit := queryParams.Get("limit")
 	offset := queryParams.Get("offset")
 
-	lists, _ := list.GetLists(limit, offset)
+	lists, err := list.GetLists(limit, offset)
 
-	utils.JsonResponse(w, lists)
+	if err != nil {
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error to Get All List"})
+		return
+	} else {
+
+		utils.JsonResponse(w, lists)
+	}
+
 }
 
 var create = endpoint("create")
@@ -68,11 +82,13 @@ func createList(w http.ResponseWriter, r *http.Request) {
 
 	ersr := list.CreateList(newList)
 	if ersr != nil {
-		utils.JsonResponse(w, "Error To Create List")
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error To Create List"})
+		return
 	} else {
 		listG, err := list.GetListByName(newList.Name)
 		if err != nil {
-			utils.JsonResponse(w, err)
+			utils.JsonResponse(w, types.ErrorMessage{Error: "Error to Get List"})
+			return
 
 		} else {
 			utils.JsonResponse(w, listG)
@@ -110,12 +126,16 @@ func updateList(w http.ResponseWriter, r *http.Request) {
 	errs := list.UpdateList(listID, upList)
 	if errs != nil {
 		// TODO: Enviar al correo
-		fmt.Print(errs)
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error to Update List"})
+		return
+
 	}
 
 	listar, errv := list.GetList(listID)
 	if errv != nil {
-		utils.JsonResponse(w, errv)
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error to Get List"})
+		return
+
 	} else {
 		utils.JsonResponse(w, listar)
 	}
@@ -130,6 +150,8 @@ func deleteList(w http.ResponseWriter, r *http.Request) {
 	err := list.DeleteList(listID)
 	if err != nil {
 		// TODO: Enviar al correo
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error to Delete List"})
+		return
 	}
 
 	codeDel := code.DeleteAllCodes(listID)
@@ -157,13 +179,18 @@ func nextCode(w http.ResponseWriter, r *http.Request) {
 
 	codes, errors := code.GetCodesByOrder(listID, fmt.Sprint(act))
 	if errors != nil {
-		utils.JsonResponse(w, types.Message{Message: "Error al optener Codigo actual"})
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error al optener Codigo actual"})
 		return
 	}
 
-	list.UpdateAct(listID)
+	ee := list.UpdateAct(listID)
+	if ee != nil {
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error al actualizar la lista"})
+		return
+	} else {
+		utils.JsonResponse(w, codes)
+	}
 
-	utils.JsonResponse(w, codes)
 }
 
 var Add = endpoint("add/{idList}/{idUser}")
@@ -197,14 +224,14 @@ func addCode(w http.ResponseWriter, r *http.Request) {
 	var iframe types.Iframe
 	err = json.Unmarshal(body, &iframe)
 	if err != nil {
-		utils.JsonResponse(w, types.Message{Message: err})
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error al optener Body"})
 		return
 	}
 
 	fr := utils.IframeRemove(iframe)
 
 	if fr == "" {
-		utils.JsonResponse(w, types.Message{Message: "Error al copiar el codigo del video"})
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error al copiar el codigo del video"})
 		return
 	}
 	// Deserializar el cuerpo en una estructura User
@@ -217,19 +244,20 @@ func addCode(w http.ResponseWriter, r *http.Request) {
 		Id:           0,
 	}
 
-	if err != nil {
-		http.Error(w, "Error al deserializar los datos del cuerpo", http.StatusBadRequest)
-		return
-	}
-
 	errs := code.CreateCode(newCode)
 	if errs != nil {
-		http.Error(w, "Error al crear Code", http.StatusBadRequest)
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error al crear Code"})
 		return
 	}
-	list.UpdateCount(listID)
+	erre := list.UpdateCount(listID)
 
-	utils.JsonResponse(w, types.Message{Message: "Code Creado correctamente"})
+	if erre != nil {
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error al update count"})
+		return
+	} else {
+		utils.JsonResponse(w, types.Message{Message: "Code Creado correctamente"})
+	}
+
 }
 
 var LC []types.Controller = []types.Controller{

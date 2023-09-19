@@ -36,6 +36,10 @@ type Message struct {
 	Message any `json:"message"`
 }
 
+type ErrorMessage struct {
+	Error any `json:"error"`
+}
+
 // Act === Actual
 type List struct {
 	Id     int    `json:"id"`

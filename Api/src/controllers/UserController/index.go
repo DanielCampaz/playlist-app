@@ -23,9 +23,16 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userID := vars["id"]
 
-	user, _ := u.GetUser(userID)
+	user, err := u.GetUser(userID)
 
-	utils.JsonResponse(w, user)
+	if err != nil {
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error to Get user"})
+		return
+	} else {
+
+		utils.JsonResponse(w, user)
+	}
+
 }
 
 var getAll = endpoint("g/all")
@@ -39,9 +46,16 @@ func getAllUsers(w http.ResponseWriter, r *http.Request) {
 	limit := queryParams.Get("limit")
 	offset := queryParams.Get("offset")
 
-	users, _ := u.GetUsers(limit, offset)
+	users, err := u.GetUsers(limit, offset)
 
-	utils.JsonResponse(w, users)
+	if err != nil {
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error to Get all user"})
+		return
+	} else {
+
+		utils.JsonResponse(w, users)
+	}
+
 }
 
 var getId = endpoint("g/{id}")
@@ -55,9 +69,16 @@ func getIdUsers(w http.ResponseWriter, r *http.Request) {
 	limit := queryParams.Get("limit")
 	offset := queryParams.Get("offset")
 
-	users, _ := u.GetUsers(limit, offset)
+	users, err := u.GetUsers(limit, offset)
 
-	utils.JsonResponse(w, users)
+	if err != nil {
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error to Get user"})
+		return
+	} else {
+
+		utils.JsonResponse(w, users)
+	}
+
 }
 
 var create = endpoint("create")
@@ -83,19 +104,20 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Print(newUser)
 
-	// ersr := u.CreateUser(newUser)
-	// if ersr != nil {
-	// 	utils.JsonResponse(w, ersr)
+	ersr := u.CreateUser(newUser)
+	if ersr != nil {
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error to create user"})
 
-	// } else {
-	// 	newUserCreate, err := u.GetUserByEmail(newUser.Email)
-	// 	if err != nil {
-	// 		utils.JsonResponse(w, err)
+	} else {
+		newUserCreate, err := u.GetUserByEmail(newUser.Email)
+		if err != nil {
+			utils.JsonResponse(w, types.ErrorMessage{Error: "Error to Get user"})
+			return
 
-	// 	} else {
-	// 		utils.JsonResponse(w, newUserCreate)
-	// 	}
-	// }
+		} else {
+			utils.JsonResponse(w, newUserCreate)
+		}
+	}
 
 }
 
@@ -129,12 +151,14 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
 	if errs != nil {
 		// TODO: Enviar al correo
 		fmt.Print(errs)
+		return
 	}
 
 	id := strconv.FormatInt(int64(upUser.Id), 10)
 	userUpdate, err := u.GetUser(id)
 	if err != nil {
-		utils.JsonResponse(w, err)
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error to Update user"})
+		return
 
 	} else {
 		utils.JsonResponse(w, userUpdate)
@@ -150,7 +174,8 @@ func deleteUser(w http.ResponseWriter, r *http.Request) {
 	err := u.DeleteUser(userID)
 	if err != nil {
 		// TODO: Enviar al correo
-		utils.JsonResponse(w, err)
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error to Delete user"})
+		return
 
 	}
 	utils.JsonResponse(w, types.Message{Message: "User Deleting"})

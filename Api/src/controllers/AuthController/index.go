@@ -2,11 +2,10 @@ package authcontroller
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	usercontroller "main/src/controllers/UserController"
 
-	//u "main/src/services/User"
+	u "main/src/services/User"
 	"main/src/types"
 	"main/src/utils"
 	"net/http"
@@ -34,23 +33,24 @@ func loginM(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Print(login)
-
-	// user, err := u.GetUserByEmail(login.Email)
-	// if err != nil {
-	// 	utils.JsonResponse(w, err)
-	// } else {
-	// 	eror := utils.ComparePassword(login.Password, user.Password)
-	// 	if eror != nil {
-	// 		utils.JsonResponse(w, types.Message{Message: "password is not equal"})
-	// 	} else {
-	// 		token, errorr := utils.GenerateJWT(user.Email)
-	// 		if errorr != nil {
-	// 			utils.JsonResponse(w, types.LoginResponse{Data: "Error to generate Token", Token: ""})
-	// 		}
-	// 		utils.JsonResponse(w, types.LoginResponse{Data: user, Token: token})
-	// 	}
-	// }
+	user, err := u.GetUserByEmail(login.Email)
+	if err != nil {
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Not User whit this Email"})
+		return
+	} else {
+		eror := utils.ComparePassword(login.Password, user.Password)
+		if eror != nil {
+			utils.JsonResponse(w, types.ErrorMessage{Error: "Password is not equal"})
+			return
+		} else {
+			token, errorr := utils.GenerateJWT(user.Email)
+			if errorr != nil {
+				utils.JsonResponse(w, types.ErrorMessage{Error: "Error to generate Token"})
+				return
+			}
+			utils.JsonResponse(w, types.LoginResponse{Data: user, Token: token})
+		}
+	}
 }
 
 var singup = endpoint("singup")
