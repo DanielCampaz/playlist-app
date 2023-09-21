@@ -1,3 +1,5 @@
+import { SESSIONLOCALST, SESSIONTOKENLOCALST } from "../../const";
+
 export default class LocalStorage {
   constructor() {}
   private localstorage = localStorage;
@@ -15,6 +17,29 @@ export default class LocalStorage {
     }
 
     return null;
+  }
+
+  saveSession(data: any) {
+    if (data.token) {
+      this.localstorage.setItem(
+        SESSIONTOKENLOCALST,
+        JSON.stringify(data.token)
+      );
+      this.localstorage.setItem(SESSIONLOCALST, JSON.stringify(data.data));
+    }
+  }
+
+  getToken() {
+    return this.get(SESSIONTOKENLOCALST);
+  }
+
+  getSession() {
+    return this.get(SESSIONLOCALST);
+  }
+
+  singOut() {
+    this.delete(SESSIONLOCALST);
+    return this.delete(SESSIONTOKENLOCALST);
   }
 
   delete(key: string): boolean {
