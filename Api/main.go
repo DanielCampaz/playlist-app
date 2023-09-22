@@ -11,10 +11,10 @@ import (
 	"main/src/utils"
 	"net/http"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/rs/cors"
 )
 
 // type Response struct {
@@ -56,15 +56,10 @@ func main() {
 	}
 	fmt.Println("Import of LIST routes Completed")
 
-	// Configuración de CORS
-	corsOptions := cors.New(cors.Options{
-		AllowedOrigins: []string{"*"}, // Cambia esto a tu origen permitido
-		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-	})
-
-	// Aplica CORS como middleware
-	handler := corsOptions.Handler(routes)
-
-	fmt.Println("API Listening on port 8080")
-	log.Fatal(http.ListenAndServe(envirimoents.GetPort(), handler))
+	fmt.Println("API Listening on port" + envirimoents.GetPort())
+	log.Fatal(http.ListenAndServe(envirimoents.GetPort(), handlers.CORS(
+		handlers.AllowedOrigins([]string{"*"}),
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
+		handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Token"}),
+	)(routes)))
 }

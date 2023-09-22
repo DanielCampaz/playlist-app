@@ -12,4 +12,6 @@ require golang.org/x/crypto v0.12.0
 
 require github.com/golang-jwt/jwt v3.2.2+incompatible
 
-require github.com/rs/cors v1.10.0
+require github.com/gorilla/handlers v1.5.1
+
+require github.com/felixge/httpsnoop v1.0.1 // indirect

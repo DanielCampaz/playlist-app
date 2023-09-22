@@ -67,6 +67,16 @@ func UpdateAct(id string) error {
 	return err
 }
 
+func UpdateReset(id string) error {
+	db, er := services.GetDb()
+	if er != nil {
+		return er
+	}
+	_, err := db.Exec("UPDATE list SET act=0 WHERE id=?", id)
+	defer db.Close()
+	return err
+}
+
 func DeleteList(id string) error {
 	db, er := services.GetDb()
 	if er != nil {
@@ -75,6 +85,22 @@ func DeleteList(id string) error {
 	_, err := db.Exec("DELETE FROM list WHERE id=?", id)
 	defer db.Close()
 	return err
+}
+
+func DeleteManyList(ids []string) [50]string {
+	var errosIds [50]string
+	db, er := services.GetDb()
+	if er != nil {
+		return errosIds
+	}
+	for index, value := range ids {
+		_, err := db.Exec("DELETE FROM list WHERE id=?", value)
+		if err != nil {
+			errosIds[index] = value
+		}
+	}
+	defer db.Close()
+	return errosIds
 }
 
 func GetList(id string) (types.List, error) {

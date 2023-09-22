@@ -3,6 +3,9 @@ import ErrorPage from "./components/ErrorPage";
 import Auth from "./components/Auth/Auth";
 import Home from "./pages/Home";
 import Principal from "./pages/Principal";
+import Add from "./pages/Add";
+import Play from "./pages/Play";
+import CreateList from "./pages/CreateList";
 
 const Router = createBrowserRouter([
   {
@@ -12,6 +15,18 @@ const Router = createBrowserRouter([
       {
         path: "home",
         element: <Home />,
+      },
+      {
+        path: "add/:id",
+        element: <Add />,
+      },
+      {
+        path: "play/:id",
+        element: <Play />,
+      },
+      {
+        path: "create",
+        element: <CreateList />,
       },
     ],
     errorElement: <ErrorPage />,

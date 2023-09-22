@@ -9,7 +9,6 @@ export default class AuthConnection {
   private constructor() {}
 
   static async Login(data: PropsLogin) {
-    console.log(URLLOGIN, URLSINGUP);
     const response = await fetch(URLLOGIN, {
       method: "POST",
       headers: {

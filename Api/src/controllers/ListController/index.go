@@ -58,6 +58,31 @@ func getAllLists(w http.ResponseWriter, r *http.Request) {
 
 }
 
+var getCodes = endpoint("codes/all/{idlist}")
+var methodGetCodes = "GET"
+
+func getAllCodes(w http.ResponseWriter, r *http.Request) {
+	// Obtener los parámetros de consulta de la URL
+	queryParams := r.URL.Query()
+	vars := mux.Vars(r)
+	listID := vars["idlist"]
+
+	// Obtener valores individuales de los parámetros de consulta
+	limit := queryParams.Get("limit")
+	offset := queryParams.Get("offset")
+
+	lists, err := code.GetCodesByList(limit, offset, listID)
+
+	if err != nil {
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error to Get All Code to " + listID})
+		return
+	} else {
+
+		utils.JsonResponse(w, lists)
+	}
+
+}
+
 var create = endpoint("create")
 var methodCreate = "POST"
 
@@ -80,6 +105,8 @@ func createList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	newList.Act = 0
+	newList.Counts = 0
 	ersr := list.CreateList(newList)
 	if ersr != nil {
 		utils.JsonResponse(w, types.ErrorMessage{Error: "Error To Create List"})
@@ -163,29 +190,46 @@ func deleteList(w http.ResponseWriter, r *http.Request) {
 	utils.JsonResponse(w, types.Message{Message: "List Deleting; " + msDelCod})
 }
 
-var next = endpoint("next/{id}")
+var next = endpoint("next/{idList}/{idUser}")
 var methodNext = "GET"
 
 func nextCode(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	listID := vars["id"]
+	listID := vars["idList"]
+	userID := vars["idUser"]
 	lista, err := list.GetList(listID)
 	if err != nil {
 		utils.JsonResponse(w, types.Message{Message: "Error al optener La Lista"})
 		return
 	}
 
-	act := lista.Act + 1
+	_, errc := user.GetUser(userID)
+	if errc != nil {
+		utils.JsonResponse(w, "Error al optener el usuario")
+		return
+	}
 
+	act := lista.Act + 1
+	if act > lista.Counts {
+		utils.JsonResponse(w, types.Message{Message: "No hay mas Videos en la lista"})
+		return
+	}
 	codes, errors := code.GetCodesByOrder(listID, fmt.Sprint(act))
 	if errors != nil {
 		utils.JsonResponse(w, types.ErrorMessage{Error: "Error al optener Codigo actual"})
 		return
 	}
 
+	errorror := "Error al actualizar la lista"
+	codes[0].IsPlatey = true
+	erroo := code.UpdateCode(codes[0].Id, codes[0])
+	if erroo != nil {
+		errorror = errorror + "; Error al actualizar el codigo"
+	}
+
 	ee := list.UpdateAct(listID)
 	if ee != nil {
-		utils.JsonResponse(w, types.ErrorMessage{Error: "Error al actualizar la lista"})
+		utils.JsonResponse(w, types.ErrorMessage{Error: errorror})
 		return
 	} else {
 		utils.JsonResponse(w, codes)
@@ -193,7 +237,7 @@ func nextCode(w http.ResponseWriter, r *http.Request) {
 
 }
 
-var Add = endpoint("add/{idList}/{idUser}")
+var add = endpoint("add/{idList}/{idUser}")
 var methodAdd = "POST"
 
 func addCode(w http.ResponseWriter, r *http.Request) {
@@ -260,11 +304,69 @@ func addCode(w http.ResponseWriter, r *http.Request) {
 
 }
 
+var deleteMany = endpoint("deletemany")
+var methodDeleteMany = "POST"
+
+func deleteManyCode(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userID := vars["idUser"]
+
+	_, errc := user.GetUser(userID)
+	if errc != nil {
+		utils.JsonResponse(w, "Error al optener el usuario")
+		return
+	}
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Error al leer el cuerpo de la solicitud", http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	// Deserializar el cuerpo en una estructura User
+
+	var deletemany types.DeleteMany
+	err = json.Unmarshal(body, &deletemany)
+	if err != nil {
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error al optener Body"})
+		return
+	}
+
+	dle := list.DeleteManyList(deletemany.Ids)
+
+	utils.JsonResponse(w, dle)
+	return
+
+}
+
+var restarte = endpoint("restar/{id}")
+var methodRestarte = "PUT"
+
+func restart(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	dle := list.UpdateReset(id)
+	if dle != nil {
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error to Reset Playlist"})
+		return
+	} else {
+		utils.JsonResponse(w, types.Message{Message: "Reset Complete"})
+		return
+	}
+
+}
+
 var LC []types.Controller = []types.Controller{
 	{
 		Url:     create,
 		Control: utils.VerifyTokenJWT(createList),
 		Method:  methodCreate,
+	},
+	{
+		Url:     restarte,
+		Control: utils.VerifyTokenJWT(restart),
+		Method:  methodRestarte,
 	},
 	{
 		Url:     update,
@@ -275,6 +377,11 @@ var LC []types.Controller = []types.Controller{
 		Url:     delete,
 		Control: utils.VerifyTokenJWT(deleteList),
 		Method:  methodDelete,
+	},
+	{
+		Url:     deleteMany,
+		Control: utils.VerifyTokenJWT(deleteManyCode),
+		Method:  methodDeleteMany,
 	},
 	{
 		Url:     get,
@@ -292,8 +399,13 @@ var LC []types.Controller = []types.Controller{
 		Method:  methodNext,
 	},
 	{
-		Url:     Add,
+		Url:     add,
 		Control: utils.VerifyTokenJWT(addCode),
 		Method:  methodAdd,
+	},
+	{
+		Url:     getCodes,
+		Control: utils.VerifyTokenJWT(getAllCodes),
+		Method:  methodGetCodes,
 	},
 }

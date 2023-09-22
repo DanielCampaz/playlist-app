@@ -25,16 +25,38 @@ export default class LocalStorage {
         SESSIONTOKENLOCALST,
         JSON.stringify(data.token)
       );
-      this.localstorage.setItem(SESSIONLOCALST, JSON.stringify(data.data));
+      if (data.data) {
+        if (data.data.password) {
+          this.localstorage.setItem(
+            SESSIONLOCALST,
+            JSON.stringify({
+              ...data.data,
+              password: "",
+            })
+          );
+        } else {
+          this.localstorage.setItem(SESSIONLOCALST, JSON.stringify(data.data));
+        }
+      }
     }
   }
 
   getToken() {
-    return this.get(SESSIONTOKENLOCALST);
+    const token = this.get(SESSIONTOKENLOCALST);
+    if (token === null) {
+      return "";
+    } else {
+      return token;
+    }
   }
 
   getSession() {
-    return this.get(SESSIONLOCALST);
+    const data = this.get(SESSIONLOCALST);
+    if (data === null) {
+      return {};
+    } else {
+      return data;
+    }
   }
 
   singOut() {

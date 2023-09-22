@@ -34,7 +34,7 @@ export default function Login() {
       toast.success("Login Succesful");
       Storage.local.saveSession(responLogin);
       setTimeout(() => {
-        navigate("/", {
+        navigate("/home", {
           replace: true,
         });
       }, 6000);
@@ -59,7 +59,7 @@ export default function Login() {
             <HowToRegIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Login
           </Typography>
           <Box
             component="form"

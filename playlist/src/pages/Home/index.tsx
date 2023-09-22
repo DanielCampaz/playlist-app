@@ -1,10 +1,23 @@
+import Container from "@mui/material/Container";
 import List from "../../components/List";
-import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+// import { useState } from "react";
+// import ListConnection from "../../class/connection/list";
 
 export default function Home() {
   return (
-    <Box sx={{ justifyContent: "center" }}>
-      <List />
-    </Box>
+    <div
+      style={{
+        marginTop: "15px",
+      }}
+    >
+      <Container component="main">
+        <Button variant="outlined" href="/create">
+          <AddCircleIcon />
+        </Button>
+        <List />
+      </Container>
+    </div>
   );
 }

@@ -9,6 +9,41 @@ export interface User {
   password: string;
 }
 
+export interface List {
+  name: string;
+  iduser: string;
+  act: number;
+  counts: number;
+}
+
+export interface Code {
+  code: string;
+  order_number: number;
+  isPlatey: boolean;
+  idUser: string;
+  idList: string;
+}
+
+export interface AddType {
+  ifr: string;
+  type: string;
+}
+
+export interface Paginate<T> {
+  data: T;
+  limit: string;
+  offset: string;
+}
+
+// // Act === Actual
+// type List struct {
+// 	Id     int    `json:"id"`
+// 	Name   string `json:"name"`
+// 	IdUser string `json:"iduser"`
+// 	Act    int    `json:"act"`
+// 	Counts int    `json:"counts"`
+// }
+
 // type Code struct {
 // 	Id           int    `json:"id"`
 // 	Code         string `json:"code"`

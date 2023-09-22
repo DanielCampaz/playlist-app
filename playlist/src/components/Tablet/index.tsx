@@ -18,13 +18,19 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
 import { useMemo, useState, MouseEvent } from "react";
+import PlayCircleIcon from "@mui/icons-material/PlayCircle";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 import {
+  GetProperty,
   GetPropertyGuide,
   Order,
   TableCellSort,
   getComparator,
   stableSort,
 } from "./utilsTable";
+import { urlAdd, urlPlay } from "../../const";
+import ListConnection from "../../class/connection/list";
+import { ToastContainer, toast } from "react-toastify";
 
 // interface Data {
 //   calories: number;
@@ -170,20 +176,56 @@ function EnhancedTableHead<T extends { [key: string]: any }>(
             </TableSortLabel>
           </TableCell>
         ))}
+        <TableCell
+          key={"play"}
+          align={"right"}
+          padding={"normal"}
+          sortDirection={orderBy === "play" ? order : false}
+        >
+          <TableSortLabel
+            active={orderBy === "play"}
+            direction={orderBy === "play" ? order : "asc"}
+            onClick={createSortHandler("play")}
+          >
+            {"Play"}
+            {orderBy === "play" ? (
+              <Box component="span" sx={visuallyHidden}>
+                {order === "desc" ? "sorted descending" : "sorted ascending"}
+              </Box>
+            ) : null}
+          </TableSortLabel>
+        </TableCell>
+        <TableCell
+          key={"add"}
+          align={"right"}
+          padding={"normal"}
+          sortDirection={orderBy === "add" ? order : false}
+        >
+          <TableSortLabel
+            active={orderBy === "add"}
+            direction={orderBy === "add" ? order : "asc"}
+            onClick={createSortHandler("add")}
+          >
+            {"add"}
+            {orderBy === "add" ? (
+              <Box component="span" sx={visuallyHidden}>
+                {order === "desc" ? "sorted descending" : "sorted ascending"}
+              </Box>
+            ) : null}
+          </TableSortLabel>
+        </TableCell>
       </TableRow>
     </TableHead>
   );
 }
 
 interface EnhancedTableToolbarProps {
-  numSelected: number;
+  selected: (string | number)[];
   title: string;
 }
 
-function EnhancedTableToolbar({
-  numSelected,
-  title,
-}: EnhancedTableToolbarProps) {
+function EnhancedTableToolbar({ selected, title }: EnhancedTableToolbarProps) {
+  const numSelected = selected.length;
   return (
     <Toolbar
       sx={{
@@ -219,7 +261,17 @@ function EnhancedTableToolbar({
       )}
       {numSelected > 0 ? (
         <Tooltip title="Delete">
-          <IconButton>
+          <IconButton
+            onClick={async () => {
+              // FIXME: DELTE MANYYYYYYYYYYYYYYY
+              const dataer = await ListConnection.deleteManyTable(selected);
+              console.log({
+                dataer,
+                selected,
+              });
+              toast.success("Codes Delete");
+            }}
+          >
             <DeleteIcon />
           </IconButton>
         </Tooltip>
@@ -245,7 +297,7 @@ export default function Tableet<T extends { [key: string]: any }>({
 }: TableProps<T>) {
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof T>("");
-  const [selected, setSelected] = useState<readonly (string | number)[]>([]);
+  const [selected, setSelected] = useState<(string | number)[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -260,7 +312,7 @@ export default function Tableet<T extends { [key: string]: any }>({
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = data.map((n) => n.name);
+      const newSelected = data.map((n) => n[GetPropertyGuide(n)]);
       setSelected(newSelected);
       return;
     }
@@ -269,7 +321,7 @@ export default function Tableet<T extends { [key: string]: any }>({
 
   const handleClick = (_event: MouseEvent<unknown>, name: string | number) => {
     const selectedIndex = selected.indexOf(name);
-    let newSelected: readonly (string | number)[] = [];
+    let newSelected: (string | number)[] = [];
 
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(selected, name);
@@ -312,11 +364,10 @@ export default function Tableet<T extends { [key: string]: any }>({
       ),
     [order, orderBy, page, rowsPerPage]
   );
-  console.log(selected);
   return (
     <Box sx={{ width: "100%" }}>
       <Paper sx={{ width: "100%", mb: 2 }}>
-        <EnhancedTableToolbar title={title} numSelected={selected.length} />
+        <EnhancedTableToolbar title={title} selected={selected} />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -336,7 +387,9 @@ export default function Tableet<T extends { [key: string]: any }>({
               {visibleRows.map((row, index) => {
                 const propertyGuide = row[GetPropertyGuide(row)];
                 const isItemSelected = isSelected(propertyGuide);
-                const labelId = `enhanced-table-checkbox-${index}`;
+                const labelId = `enhanced-table-checkbox-${index}-${
+                  row[GetPropertyGuide(row)]
+                }`;
                 const keys = Object.keys(row);
 
                 return (
@@ -346,7 +399,7 @@ export default function Tableet<T extends { [key: string]: any }>({
                     role="checkbox"
                     aria-checked={isItemSelected}
                     tabIndex={-1}
-                    key={propertyGuide}
+                    key={labelId}
                     selected={isItemSelected}
                     sx={{ cursor: "pointer" }}
                   >
@@ -359,29 +412,49 @@ export default function Tableet<T extends { [key: string]: any }>({
                         }}
                       />
                     </TableCell>
-                    {keys.map((key, index) => {
+                    {keys.map((key, indexe) => {
+                      const tableRowId = `enhanced-table-checkbox-${indexe}`;
+
                       row[key];
-                      if (index === 0) {
+                      if (indexe === 0) {
                         return (
                           <TableCell
                             component="th"
                             id={labelId}
                             scope="row"
                             padding="none"
-                            key={index}
+                            key={tableRowId + "645"}
                           >
                             {row[key]}
                           </TableCell>
                         );
                       } else {
                         return (
-                          <TableCell align="right" key={index}>
+                          <TableCell align="right" key={tableRowId + "6452"}>
                             {" "}
                             {row[key]}
                           </TableCell>
                         );
                       }
                     })}
+                    <TableCell align="right" key={labelId + "38223"}>
+                      <Typography
+                        textAlign="center"
+                        component="a"
+                        href={urlPlay(GetProperty(row))}
+                      >
+                        <PlayCircleIcon />
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right" key={labelId + "3223"}>
+                      <Typography
+                        textAlign="center"
+                        component="a"
+                        href={urlAdd(GetProperty(row))}
+                      >
+                        <AddCircleIcon />
+                      </Typography>
+                    </TableCell>
                   </TableRow>
                 );
               })}
@@ -407,6 +480,7 @@ export default function Tableet<T extends { [key: string]: any }>({
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
+      <ToastContainer />
     </Box>
   );
 }

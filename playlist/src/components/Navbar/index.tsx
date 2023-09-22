@@ -15,6 +15,9 @@ import AdbIcon from "@mui/icons-material/Adb";
 import pages from "../../navigation";
 import Storage from "../../class/storage";
 import "./navbar.css";
+import UserConnection from "../../class/connection/user";
+import { User, WID } from "../../types";
+import { ToastContainer, toast } from "react-toastify";
 
 // const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
@@ -50,10 +53,26 @@ const settings = () => {
       },
       type: "Button",
     },
+    {
+      name: "Delete Account",
+      to: "",
+      func: async () => {
+        const sesion = Storage.local.getSession() as WID<User> | {};
+        if ("id" in sesion) {
+          const response = await UserConnection.deleteById(sesion.id);
+          if ("error" in response) {
+            toast.error(response.message);
+          } else if ("message" in response) {
+            toast.success(response.message);
+          }
+        }
+      },
+      type: "Button",
+    },
   ];
 
   const session = Storage.local.getToken();
-  return session === null ? wsi : wci;
+  return session === null || session === "" ? wsi : wci;
 };
 
 export default function NavBar() {
@@ -84,7 +103,7 @@ export default function NavBar() {
             variant="h6"
             noWrap
             component="a"
-            href="/"
+            href="/home"
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -199,6 +218,10 @@ export default function NavBar() {
                     <Typography
                       textAlign="center"
                       component="button"
+                      style={{
+                        background: "none",
+                        border: "none",
+                      }}
                       onClick={setting.func}
                     >
                       {setting.name}
@@ -218,6 +241,7 @@ export default function NavBar() {
           </Box>
         </Toolbar>
       </Container>
+      <ToastContainer />
     </AppBar>
   );
 }

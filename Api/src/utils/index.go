@@ -103,6 +103,21 @@ func IframeRemove(iframeCode types.Iframe) string {
 			return ""
 		}
 
+	} else if iframeCode.Type == "url" {
+		// Define una expresión regular para buscar el código de video en la URL
+		re := regexp.MustCompile(`[?&]v=([a-zA-Z0-9_-]+)`)
+
+		// Encuentra todas las coincidencias en la URL
+		matches := re.FindStringSubmatch(iframeCode.Ifr)
+
+		// Verifica si se encontraron coincidencias
+		if len(matches) < 2 {
+			return ""
+		}
+
+		// El código de video está en la segunda subcoincidencia
+		videoCode := matches[1]
+		return videoCode
 	} else {
 		return iframeCode.Ifr
 	}

@@ -25,7 +25,7 @@ func CreateCode(code types.Code) error {
 	return err
 }
 
-func UpdateCode(id string, code types.Code) error {
+func UpdateCode(id int, code types.Code) error {
 	db, er := services.GetDb()
 	if er != nil {
 		return er
@@ -108,6 +108,43 @@ func GetCodes(limit string, offset string) (types.Paginate, error) {
 		Offset: offsett,
 	}, nil
 }
+func GetCodesByList(limit string, offset string, idlist string) (types.Paginate, error) {
+	db, er := services.GetDb()
+	var limitt = "10"
+	var offsett = "0"
+	if er != nil {
+		return types.Paginate{}, er
+	}
+	if limit != "" {
+		limitt = limit
+	}
+	if offset != "" {
+		offsett = offset
+	}
+	query := fmt.Sprintf("SELECT * FROM code WHERE idlist=%s limit %s offset %s;", idlist, limitt, offsett)
+	rows, err := db.Query(query)
+	if err != nil {
+		return types.Paginate{}, err
+	}
+	defer rows.Close()
+
+	var codeList []types.Code
+
+	for rows.Next() {
+		var code types.Code
+		err := rows.Scan(&code.Id, &code.Code, &code.Order_Number, &code.IsPlatey, &code.IdUser, &code.IdList)
+		if err != nil {
+			return types.Paginate{}, err
+		}
+		codeList = append(codeList, code)
+	}
+
+	return types.Paginate{
+		Data:   codeList,
+		Limit:  limitt,
+		Offset: offsett,
+	}, nil
+}
 
 func GetCodesByOrder(idList string, order string) ([]types.Code, error) {
 	db, er := services.GetDb()
@@ -131,7 +168,6 @@ func GetCodesByOrder(idList string, order string) ([]types.Code, error) {
 		}
 		codeList = append(codeList, code)
 	}
-	fmt.Print(codeList)
 	return codeList, nil
 }
 

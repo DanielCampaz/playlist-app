@@ -62,3 +62,7 @@ type Iframe struct {
 	Ifr  string `json:"ifr"`
 	Type string `json:"type"`
 }
+
+type DeleteMany struct {
+	Ids []string `json:"ids"`
+}

@@ -54,6 +54,15 @@ export function GetPropertyGuide<T extends { [key: string]: any }>(data: T) {
   return "";
 }
 
+export function GetProperty<T extends { [key: string]: any }>(data: T) {
+  const property = GetPropertyGuide(data);
+  if (property !== "") {
+    return data[property];
+  } else {
+    return "";
+  }
+}
+
 export type Order = "asc" | "desc";
 
 export function getComparator<Key extends keyof any>(

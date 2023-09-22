@@ -6,9 +6,13 @@
 ### USERS ENDPOINTS
 ### Get All
 GET http://{{hostname}}:{{port}}/{{nameapi}}/users/g/all?limit=10&offset=0
+Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2OTUzODk3ODUsInVzZXIiOiJTaW5jZXJlQGFwcmlsLmJpeiJ9.E4Rd66cfu-yqEQEIlzoQGh2sJtpEKsb_apwogYLcdF0
+
 
 ### Get User By Id
 GET http://{{hostname}}:{{port}}/{{nameapi}}/users/13
+Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2OTUzODk3ODUsInVzZXIiOiJTaW5jZXJlQGFwcmlsLmJpeiJ9.E4Rd66cfu-yqEQEIlzoQGh2sJtpEKsb_apwogYLcdF0
+
 
 ### Post User
 POST http://{{hostname}}:{{port}}/{{nameapi}}/users/create
@@ -59,12 +63,18 @@ Content-Type: application/json
 ### LIST ENDPOINTS
 ### Get All
 GET http://{{hostname}}:{{port}}/{{nameapi}}/list/g/all?limit=10&offset=0
+Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2OTUzODk3ODUsInVzZXIiOiJTaW5jZXJlQGFwcmlsLmJpeiJ9.E4Rd66cfu-yqEQEIlzoQGh2sJtpEKsb_apwogYLcdF0
+
+###
+GET http://{{hostname}}:{{port}}/{{nameapi}}/list/codes/all/3?limit=10&offset=0
+Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2OTUzODk3ODUsInVzZXIiOiJTaW5jZXJlQGFwcmlsLmJpeiJ9.E4Rd66cfu-yqEQEIlzoQGh2sJtpEKsb_apwogYLcdF0
+
 
 ### Get List By Id
 GET http://{{hostname}}:{{port}}/{{nameapi}}/list/1
 
 ### Get Code Act
-GET http://{{hostname}}:{{port}}/{{nameapi}}/list/next/3
+GET http://{{hostname}}:{{port}}/{{nameapi}}/list/next/3/13
 
 ### POST Code in List By Id
 POST  http://{{hostname}}:{{port}}/{{nameapi}}/list/add/3/13
@@ -73,6 +83,18 @@ Content-Type: application/json
 {
     "ifr": "<iframe width='560' height='315' src='https://www.youtube.com/embed/AGiayASyp2Q?si=eRn-rQhF9jzZKu_u' title='YouTube video player' frameborder='0' allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' allowfullscreen></iframe>",
     "type": "iframe"
+}
+
+
+###
+PUT  http://{{hostname}}:{{port}}/{{nameapi}}/list/restar/3
+
+###
+POST  http://{{hostname}}:{{port}}/{{nameapi}}/list/deletemany
+Content-Type: application/json
+
+{
+    "ids": [8,2,42,5]
 }
 
 ### Post List

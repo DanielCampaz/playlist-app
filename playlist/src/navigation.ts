@@ -4,9 +4,6 @@ interface Navigation {
   current: boolean;
 }
 
-const navigation: Navigation[] = [
-  { name: "Home", to: "home", current: true },
-  { name: "list's", to: "lists", current: false },
-];
+const navigation: Navigation[] = [{ name: "Home", to: "/home", current: true }];
 
 export default navigation;
