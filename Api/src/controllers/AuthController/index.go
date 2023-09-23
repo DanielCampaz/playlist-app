@@ -20,7 +20,7 @@ func loginM(w http.ResponseWriter, r *http.Request) {
 	// Leer el cuerpo de la solicitud
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, "Error al leer el cuerpo de la solicitud", http.StatusBadRequest)
+		http.Error(w, "Error reading request body", http.StatusBadRequest)
 		return
 	}
 	defer r.Body.Close()
@@ -29,7 +29,7 @@ func loginM(w http.ResponseWriter, r *http.Request) {
 	var login types.Login
 	err = json.Unmarshal(body, &login)
 	if err != nil {
-		http.Error(w, "Error al deserializar los datos del cuerpo", http.StatusBadRequest)
+		http.Error(w, "Error deserializing body data", http.StatusBadRequest)
 		return
 	}
 

@@ -91,7 +91,7 @@ func createList(w http.ResponseWriter, r *http.Request) {
 	// Leer el cuerpo de la solicitud
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, "Error al leer el cuerpo de la solicitud", http.StatusBadRequest)
+		http.Error(w, "Error reading request body", http.StatusBadRequest)
 		return
 	}
 	defer r.Body.Close()
@@ -100,8 +100,8 @@ func createList(w http.ResponseWriter, r *http.Request) {
 	var newList types.List
 	err = json.Unmarshal(body, &newList)
 	if err != nil {
-		fmt.Println("Error al deserializar JSON:", err)
-		http.Error(w, "Error al deserializar el cuerpo de la solicitud", http.StatusBadRequest)
+		fmt.Println("Error deserializing JSON:", err)
+		http.Error(w, "Error deserializing request body", http.StatusBadRequest)
 		return
 	}
 
@@ -137,7 +137,7 @@ func updateList(w http.ResponseWriter, r *http.Request) {
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, "Error al leer el cuerpo de la solicitud", http.StatusBadRequest)
+		http.Error(w, "Error reading request body", http.StatusBadRequest)
 		return
 	}
 	defer r.Body.Close()
@@ -146,7 +146,7 @@ func updateList(w http.ResponseWriter, r *http.Request) {
 	var upList types.List = lista
 	err = json.Unmarshal(body, &upList)
 	if err != nil {
-		http.Error(w, "Error al deserializar los datos del cuerpo", http.StatusBadRequest)
+		http.Error(w, "Error deserializing body data", http.StatusBadRequest)
 		return
 	}
 
@@ -182,9 +182,9 @@ func deleteList(w http.ResponseWriter, r *http.Request) {
 	}
 
 	codeDel := code.DeleteAllCodes(listID)
-	msDelCod := "Error al eliminar code's de esta playlist: " + listID
+	msDelCod := "Error when removing code from this playlist: " + listID
 	if codeDel {
-		msDelCod = "Todos los Code Eliminados"
+		msDelCod = "All Code Removed"
 	}
 	// TODO: Eliminar los codigos
 	utils.JsonResponse(w, types.Message{Message: "List Deleting; " + msDelCod})
@@ -199,32 +199,32 @@ func nextCode(w http.ResponseWriter, r *http.Request) {
 	userID := vars["idUser"]
 	lista, err := list.GetList(listID)
 	if err != nil {
-		utils.JsonResponse(w, types.Message{Message: "Error al optener La Lista"})
+		utils.JsonResponse(w, types.Message{Message: "Error getting the List"})
 		return
 	}
 
 	_, errc := user.GetUser(userID)
 	if errc != nil {
-		utils.JsonResponse(w, "Error al optener el usuario")
+		utils.JsonResponse(w, "Error getting user")
 		return
 	}
 
 	act := lista.Act + 1
 	if act > lista.Counts {
-		utils.JsonResponse(w, types.Message{Message: "No hay mas Videos en la lista"})
+		utils.JsonResponse(w, types.Message{Message: "There are no more videos in the list"})
 		return
 	}
 	codes, errors := code.GetCodesByOrder(listID, fmt.Sprint(act))
 	if errors != nil {
-		utils.JsonResponse(w, types.ErrorMessage{Error: "Error al optener Codigo actual"})
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error getting current code"})
 		return
 	}
 
-	errorror := "Error al actualizar la lista"
+	errorror := "Error updating list"
 	codes[0].IsPlatey = true
 	erroo := code.UpdateCode(codes[0].Id, codes[0])
 	if erroo != nil {
-		errorror = errorror + "; Error al actualizar el codigo"
+		errorror = errorror + "; Error updating code"
 	}
 
 	ee := list.UpdateAct(listID)
@@ -246,19 +246,19 @@ func addCode(w http.ResponseWriter, r *http.Request) {
 	userID := vars["idUser"]
 	lista, err := list.GetList(listID)
 	if err != nil {
-		utils.JsonResponse(w, "Error al optener la lista")
+		utils.JsonResponse(w, "Error getting the List")
 		return
 	}
 
 	_, errc := user.GetUser(userID)
 	if errc != nil {
-		utils.JsonResponse(w, "Error al optener el usuario")
+		utils.JsonResponse(w, "Error getting the User")
 		return
 	}
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, "Error al leer el cuerpo de la solicitud", http.StatusBadRequest)
+		http.Error(w, "Error reading request body", http.StatusBadRequest)
 		return
 	}
 	defer r.Body.Close()
@@ -268,14 +268,14 @@ func addCode(w http.ResponseWriter, r *http.Request) {
 	var iframe types.Iframe
 	err = json.Unmarshal(body, &iframe)
 	if err != nil {
-		utils.JsonResponse(w, types.ErrorMessage{Error: "Error al optener Body"})
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error when opting for Body"})
 		return
 	}
 
 	fr := utils.IframeRemove(iframe)
 
 	if fr == "" {
-		utils.JsonResponse(w, types.ErrorMessage{Error: "Error al copiar el codigo del video"})
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error when copying the video code"})
 		return
 	}
 	// Deserializar el cuerpo en una estructura User
@@ -290,16 +290,16 @@ func addCode(w http.ResponseWriter, r *http.Request) {
 
 	errs := code.CreateCode(newCode)
 	if errs != nil {
-		utils.JsonResponse(w, types.ErrorMessage{Error: "Error al crear Code"})
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error creating Code"})
 		return
 	}
 	erre := list.UpdateCount(listID)
 
 	if erre != nil {
-		utils.JsonResponse(w, types.ErrorMessage{Error: "Error al update count"})
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error to update count"})
 		return
 	} else {
-		utils.JsonResponse(w, types.Message{Message: "Code Creado correctamente"})
+		utils.JsonResponse(w, types.Message{Message: "Code Create Succesful"})
 	}
 
 }
@@ -313,13 +313,13 @@ func deleteManyCode(w http.ResponseWriter, r *http.Request) {
 
 	_, errc := user.GetUser(userID)
 	if errc != nil {
-		utils.JsonResponse(w, "Error al optener el usuario")
+		utils.JsonResponse(w, "Error getting user")
 		return
 	}
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, "Error al leer el cuerpo de la solicitud", http.StatusBadRequest)
+		http.Error(w, "Error reading request body", http.StatusBadRequest)
 		return
 	}
 	defer r.Body.Close()
@@ -329,7 +329,7 @@ func deleteManyCode(w http.ResponseWriter, r *http.Request) {
 	var deletemany types.DeleteMany
 	err = json.Unmarshal(body, &deletemany)
 	if err != nil {
-		utils.JsonResponse(w, types.ErrorMessage{Error: "Error al optener Body"})
+		utils.JsonResponse(w, types.ErrorMessage{Error: "Error reading body"})
 		return
 	}
 

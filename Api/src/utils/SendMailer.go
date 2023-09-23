@@ -15,7 +15,7 @@ func SendMailer(subject string, body string, to []string) bool {
 
 	// Configura el mensaje de correo electrónico
 	from := env.GetEnv("SMTPFROMEMAIL", "email@example.com")
-	// to := []string{"dscampaz3110@gmail.com"}
+	// to := []string{""}
 	// subject := "Asunto del correo"
 	// body := "Cuerpo del correo electrónico"
 

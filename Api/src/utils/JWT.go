@@ -35,7 +35,7 @@ func VerifyTokenJWT(endpointHandler func(writer http.ResponseWriter, request *ht
 		if token != "" {
 			parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-					return nil, fmt.Errorf("Método de firma no válido: %v", token.Header["alg"])
+					return nil, fmt.Errorf("Invalid signature method: %v", token.Header["alg"])
 				}
 				return secretKey, nil
 			})

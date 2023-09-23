@@ -104,20 +104,26 @@ func IframeRemove(iframeCode types.Iframe) string {
 		}
 
 	} else if iframeCode.Type == "url" {
-		// Define una expresión regular para buscar el código de video en la URL
-		re := regexp.MustCompile(`[?&]v=([a-zA-Z0-9_-]+)`)
+		re := regexp.MustCompile(`[?&]v=([a-zA-Z0-9_-]+)|youtu\.be/([a-zA-Z0-9_-]+)`)
 
 		// Encuentra todas las coincidencias en la URL
 		matches := re.FindStringSubmatch(iframeCode.Ifr)
 
 		// Verifica si se encontraron coincidencias
 		if len(matches) < 2 {
+			fmt.Print("Could not find video code in URL")
 			return ""
 		}
 
-		// El código de video está en la segunda subcoincidencia
-		videoCode := matches[1]
-		return videoCode
+		// El código de video puede estar en la primera o segunda subcoincidencia
+		for i := 1; i < len(matches); i++ {
+			if matches[i] != "" {
+				return matches[i]
+			}
+		}
+		fmt.Print("Could not find video code in URL")
+
+		return ""
 	} else {
 		return iframeCode.Ifr
 	}
